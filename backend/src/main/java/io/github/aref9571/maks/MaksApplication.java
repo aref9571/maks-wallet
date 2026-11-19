@@ -8,8 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 @ConfigurationPropertiesScan
 public class MaksApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(MaksApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(MaksApplication.class, args);
+    }
 }

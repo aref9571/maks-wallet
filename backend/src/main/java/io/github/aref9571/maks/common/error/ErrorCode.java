@@ -3,7 +3,6 @@ package io.github.aref9571.maks.common.error;
 import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
-
     VALIDATION_FAILED(HttpStatus.BAD_REQUEST, "Validation failed"),
     MALFORMED_REQUEST(HttpStatus.BAD_REQUEST, "Malformed request"),
     NOT_FOUND(HttpStatus.NOT_FOUND, "Not found"),

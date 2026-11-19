@@ -2,7 +2,6 @@ package io.github.aref9571.maks.common.error;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ProblemDetail;
@@ -35,12 +34,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ProblemDetail handleUnreadableBody(HttpMessageNotReadableException exception) {
-        return problem(ErrorCode.MALFORMED_REQUEST, "The request body is missing or not valid JSON.", List.of());
+        return problem(
+                ErrorCode.MALFORMED_REQUEST,
+                "The request body is missing or not valid JSON.",
+                List.of());
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ProblemDetail handleTypeMismatch(MethodArgumentTypeMismatchException exception) {
-        return problem(ErrorCode.MALFORMED_REQUEST, "Parameter '" + exception.getName() + "' has an invalid value.", List.of());
+        return problem(
+                ErrorCode.MALFORMED_REQUEST,
+                "Parameter '" + exception.getName() + "' has an invalid value.",
+                List.of());
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
@@ -54,7 +59,8 @@ public class GlobalExceptionHandler {
         return problem(ErrorCode.INTERNAL_ERROR, "An unexpected error occurred.", List.of());
     }
 
-    private static ProblemDetail problem(ErrorCode errorCode, String detail, List<FieldViolation> errors) {
+    private static ProblemDetail problem(
+            ErrorCode errorCode, String detail, List<FieldViolation> errors) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(errorCode.status(), detail);
         problem.setTitle(errorCode.title());
         problem.setProperty("code", errorCode.name());

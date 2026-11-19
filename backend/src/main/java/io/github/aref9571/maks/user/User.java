@@ -13,8 +13,7 @@ import java.util.UUID;
 @Table(name = "users")
 public class User {
 
-    @Id
-    private UUID id;
+    @Id private UUID id;
 
     private String email;
 
@@ -31,8 +30,7 @@ public class User {
 
     private Instant updatedAt;
 
-    protected User() {
-    }
+    protected User() {}
 
     public static User register(String email, String passwordHash, String fullName, Clock clock) {
         User user = new User();

@@ -23,17 +23,16 @@ import org.springframework.jdbc.core.JdbcTemplate;
 @Import(TestcontainersConfiguration.class)
 class UserRepositoryTest {
 
-    private static final Clock CLOCK = Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneOffset.UTC);
-    private static final Clock LATER_CLOCK = Clock.fixed(Instant.parse("2026-01-02T00:00:00Z"), ZoneOffset.UTC);
+    private static final Clock CLOCK =
+            Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneOffset.UTC);
+    private static final Clock LATER_CLOCK =
+            Clock.fixed(Instant.parse("2026-01-02T00:00:00Z"), ZoneOffset.UTC);
 
-    @Autowired
-    private UserRepository userRepository;
+    @Autowired private UserRepository userRepository;
 
-    @Autowired
-    private TestEntityManager entityManager;
+    @Autowired private TestEntityManager entityManager;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    @Autowired private JdbcTemplate jdbcTemplate;
 
     @Test
     void savesAndLoadsUserByEmail() {
@@ -53,18 +52,20 @@ class UserRepositoryTest {
         User duplicate = User.register("anna@example.com", "other-hash", "Anna Other", CLOCK);
 
         assertThatThrownBy(() -> userRepository.saveAndFlush(duplicate))
-            .isInstanceOf(DataIntegrityViolationException.class)
-            .hasMessageContaining("users_email_uq");
+                .isInstanceOf(DataIntegrityViolationException.class)
+                .hasMessageContaining("users_email_uq");
     }
 
     @Test
     void rejectsUpperCaseEmail() {
-        assertThatThrownBy(() -> jdbcTemplate.update(
-            "INSERT INTO users (id, email, password_hash, full_name, role, enabled, created_at, updated_at) "
-                + "VALUES (?, ?, 'hash', 'Anna Smith', 'USER', TRUE, now(), now())",
-            UUID.randomUUID(), "Anna@Example.com"))
-            .isInstanceOf(DataIntegrityViolationException.class)
-            .hasMessageContaining("users_email_lower_ck");
+        assertThatThrownBy(() ->
+                        jdbcTemplate.update(
+                                "INSERT INTO users (id, email, password_hash, full_name, role, enabled, created_at, updated_at) "
+                                        + "VALUES (?, ?, 'hash', 'Anna Smith', 'USER', TRUE, now(), now())",
+                                UUID.randomUUID(),
+                                "Anna@Example.com"))
+                .isInstanceOf(DataIntegrityViolationException.class)
+                .hasMessageContaining("users_email_lower_ck");
     }
 
     @Test
@@ -75,8 +76,11 @@ class UserRepositoryTest {
         managedUser.changeFullName("Anna Brown", LATER_CLOCK);
         entityManager.flush();
 
-        String storedName = jdbcTemplate.queryForObject(
-            "SELECT full_name FROM users WHERE email = ?", String.class, "anna@example.com");
+        String storedName =
+                jdbcTemplate.queryForObject(
+                        "SELECT full_name FROM users WHERE email = ?",
+                        String.class,
+                        "anna@example.com");
         assertThat(storedName).isEqualTo("Anna Brown");
     }
 }

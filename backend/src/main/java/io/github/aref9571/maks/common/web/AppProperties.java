@@ -6,5 +6,4 @@ import org.springframework.validation.annotation.Validated;
 
 @ConfigurationProperties(prefix = "maks.app")
 @Validated
-public record AppProperties(@NotBlank String version) {
-}
+public record AppProperties(@NotBlank String version) {}

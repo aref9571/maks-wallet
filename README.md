@@ -32,3 +32,24 @@ docker compose exec postgres psql -U maks_app -d maks
 ```bash
 docker compose down -v
 ```
+
+## Backend: build and test
+
+You need Java 25 and Docker Desktop running. The tests start a real PostgreSQL container with Testcontainers, so Docker must be on.
+
+1. Build and test the backend from the `backend` folder.
+
+```bash
+cd backend
+./mvnw -B verify
+```
+
+This one command runs three checks: the tests, the formatting check (Spotless with google-java-format) and the coverage check (JaCoCo, at least 80% of lines and 70% of branches). If one of them fails, the build fails. The coverage report is written to `backend/target/site/jacoco/index.html`.
+
+2. If the formatting check fails, fix the files with the formatter. This command changes files, so look at `git diff` afterwards.
+
+```bash
+./mvnw spotless:apply
+```
+
+3. Every push to GitHub starts the workflow in `.github/workflows/ci.yml`. It runs the same `./mvnw -B verify` on a clean machine in a job called `backend`. The `main` branch only accepts a commit whose `backend` check is green.

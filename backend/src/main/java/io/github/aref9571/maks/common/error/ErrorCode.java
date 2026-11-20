@@ -6,8 +6,6 @@ public enum ErrorCode {
     VALIDATION_FAILED(HttpStatus.BAD_REQUEST, "Validation failed"),
     MALFORMED_REQUEST(HttpStatus.BAD_REQUEST, "Malformed request"),
     NOT_FOUND(HttpStatus.NOT_FOUND, "Not found"),
-    EMAIL_ALREADY_REGISTERED(HttpStatus.CONFLICT, "Email already registered"),
-    INSUFFICIENT_FUNDS(HttpStatus.UNPROCESSABLE_CONTENT, "Insufficient funds"),
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal error");
 
     private final HttpStatus status;

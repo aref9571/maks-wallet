@@ -50,4 +50,24 @@ public class User {
         this.fullName = newFullName;
         this.updatedAt = clock.instant();
     }
+
+    public UUID id() {
+        return id;
+    }
+
+    public String email() {
+        return email;
+    }
+
+    public String fullName() {
+        return fullName;
+    }
+
+    public Role role() {
+        return role;
+    }
+
+    public Instant createdAt() {
+        return createdAt;
+    }
 }

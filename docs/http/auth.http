@@ -27,3 +27,48 @@ Content-Type: application/json
   "fullName": "   ",
   "password": "short"
 }
+
+### Log in as Anna (expect 200 and an access token)
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": " Anna@Example.com ",
+  "password": "correct horse battery"
+}
+
+### Wrong password (expect 401 INVALID_CREDENTIALS)
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "anna@example.com",
+  "password": "wrong password here"
+}
+
+### Unknown email (expect the same 401)
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "nobody@example.com",
+  "password": "wrong password here"
+}
+
+### Log in as Anna (expect 200 and an access token)
+# @name login
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": " Anna@Example.com ",
+  "password": "correct horse battery"
+}
+
+### Current user with the token (expect 200 and Anna)
+GET http://localhost:8080/api/users/me
+Authorization: Bearer {{login.response.body.$.accessToken}}
+
+### Current user without a token (expect 401)
+GET http://localhost:8080/api/users/me
+

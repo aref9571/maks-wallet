@@ -2,10 +2,13 @@ package io.github.aref9571.maks.auth;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import io.github.aref9571.maks.TestcontainersConfiguration;
 import io.github.aref9571.maks.common.error.ApiException;
 import io.github.aref9571.maks.common.error.ErrorCode;
+import io.github.aref9571.maks.user.User;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -19,6 +22,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -44,6 +48,8 @@ class AuthServiceTest {
     @Autowired private PasswordEncoder passwordEncoder;
 
     @Autowired private JdbcTemplate jdbcTemplate;
+
+    @MockitoBean private TokenService tokenService;
 
     @Test
     void storesTrimmedLowerCaseEmailAndBcryptHash() {
@@ -75,5 +81,44 @@ class AuthServiceTest {
                         exception ->
                                 assertThat(exception.errorCode())
                                         .isEqualTo(ErrorCode.EMAIL_ALREADY_REGISTERED));
+    }
+
+    @Test
+    void logsInWithCorrectPasswordAndReturnsToken() {
+        when(tokenService.createAccessToken(any(User.class))).thenReturn("token-value");
+        when(tokenService.accessTokenLifeTimeSeconds()).thenReturn(900L);
+        authService.register(
+                new RegisterRequest("anna@example.com", "Anna Smith", "correct horse battery"));
+
+        LoginResponse response =
+                authService.login(new LoginRequest(" Anna@Example.com ", "correct horse battery"));
+
+        assertThat(response.accessToken()).isEqualTo("token-value");
+        assertThat(response.tokenType()).isEqualTo("Bearer");
+        assertThat(response.expiresIn()).isEqualTo(900L);
+        assertThat(response.user().email()).isEqualTo("anna@example.com");
+    }
+
+    @Test
+    void rejectsWrongPasswordWithInvalidCredentials() {
+        authService.register(
+                new RegisterRequest("anna@example.com", "Anna Smith", "correct horse battery"));
+
+        assertInvalidCredentials(new LoginRequest("anna@example.com", "wrong password here"));
+    }
+
+    @Test
+    void rejectsUnknownEmailWithTheSameInvalidCredentials() {
+        assertInvalidCredentials(new LoginRequest("nobody@example.com", "wrong password here"));
+    }
+
+    private void assertInvalidCredentials(LoginRequest request) {
+        assertThatThrownBy(() -> authService.login(request))
+                .isInstanceOfSatisfying(
+                        ApiException.class,
+                        exception ->
+                                assertThat(exception.errorCode())
+                                        .isEqualTo(ErrorCode.INVALID_CREDENTIALS))
+                .hasMessage("Email or password is incorrect.");
     }
 }

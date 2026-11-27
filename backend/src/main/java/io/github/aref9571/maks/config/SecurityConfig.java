@@ -3,6 +3,7 @@ package io.github.aref9571.maks.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -20,8 +21,10 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .sessionManagement(
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .oauth2ResourceServer(oath2 -> oath2.jwt(Customizer.withDefaults()))
                 .authorizeHttpRequests(rules ->
-                        rules.requestMatchers(HttpMethod.POST, "/api/auth/register")
+                        rules.requestMatchers(
+                                        HttpMethod.POST, "/api/auth/register", "/api/auth/login")
                                 .permitAll()
                                 .requestMatchers("/api/status", "/actuator/health")
                                 .permitAll()

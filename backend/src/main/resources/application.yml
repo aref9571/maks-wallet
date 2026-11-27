@@ -12,3 +12,7 @@ spring:
 maks:
   app:
     version: ${APP_VERSION:dev}
+  jwt:
+    secret: ${JWT_SECRET:bG9jYWwtZGV2LW9ubHktbm90LWEtcmVhbC1zZWNyZXQtMDEyMzQ1Njc4OQ==}
+    issuer: maks-api
+    access-token-lifetime: 15m

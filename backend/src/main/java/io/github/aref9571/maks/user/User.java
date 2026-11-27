@@ -70,4 +70,8 @@ public class User {
     public Instant createdAt() {
         return createdAt;
     }
+
+    public String passwordHash() {
+        return passwordHash;
+    }
 }

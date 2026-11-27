@@ -29,9 +29,12 @@ class AuthServiceRaceTest {
 
     @Mock private PasswordEncoder passwordEncoder;
 
+    @Mock private TokenService tokenService;
+
     @Test
     void returnsConflictWhenUniqueConstraintFailsAfterTheEmailCheck() {
-        AuthService authService = new AuthService(userRepository, passwordEncoder, CLOCK);
+        AuthService authService =
+                new AuthService(userRepository, passwordEncoder, CLOCK, tokenService);
         when(userRepository.existsByEmail("anna@example.com")).thenReturn(false);
         when(passwordEncoder.encode("correct horse battery")).thenReturn("hash");
         when(userRepository.saveAndFlush(any(User.class)))
